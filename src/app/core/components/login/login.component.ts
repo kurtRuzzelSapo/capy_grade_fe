@@ -37,11 +37,26 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.dataService.postRequest('login', this.loginForm.value).subscribe({
         next: (response: any) => {
+          console.log('Response:', response);
           this.openDialog(response.message);
           window.sessionStorage.setItem('user', JSON.stringify(response.data));
-          setTimeout(() => {
-            this.router.navigate(['/main']);
-          }, 2000);
+
+          const role = response.data?.role;
+          if (role === 'STUDENT') {
+            console.log('Navigating to student dashboard...');
+            setTimeout(() => {
+              this.router.navigate(['/dashboard/student'])
+                .then(() => console.log('Navigation successful'))
+                .catch(err => console.error('Navigation failed:', err));
+            }, 2000);
+          } else if (role === 'TEACHER') {
+            console.log('Navigating to teacher dashboard...');
+            setTimeout(() => {
+              this.router.navigate(['/dashboard/teacher'])
+                .then(() => console.log('Navigation successful'))
+                .catch(err => console.error('Navigation failed:', err));
+            }, 2000);
+          }
         },
         error: (error) => {
           console.log(error);

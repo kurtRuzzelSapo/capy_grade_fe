@@ -1,6 +1,8 @@
 # CapyGrade
 ## Landing page for CapyGrade 
-![alt text](image.png)
+<img src="public/landingpage.png" alt="Landing Page Image" style="border: 2px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 800px;"/>
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.2.
 
 ## Development server

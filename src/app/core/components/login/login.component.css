@@ -1,0 +1,10 @@
+::ng-deep .top-dialog {
+  position: fixed !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+  z-index: 1000 !important;
+}
+
+::ng-deep .top-dialog .mat-mdc-dialog-container {
+  margin-top: 0 !important;
+}

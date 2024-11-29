@@ -9,11 +9,27 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, CommonModule],
   template: `
-    <div [@dialogAnimation]="'visible'">
-      <!-- <h1 mat-dialog-title>Message</h1> -->
+    <div [@dialogAnimation]="'visible'" class="dialog-content">
       <div class="font-bold" mat-dialog-content>{{ data.message }}</div>
     </div>
   `,
+  styles: [`
+    .dialog-content {
+      overflow: hidden;
+      padding: 16px;
+    }
+    :host ::ng-deep .mat-mdc-dialog-container {
+      overflow: hidden !important;
+    }
+    :host ::ng-deep .mdc-dialog__surface {
+      overflow: hidden !important;
+    }
+    :host ::ng-deep .mat-mdc-dialog-content {
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  `],
   animations: [
     trigger('dialogAnimation', [
       state('void', style({

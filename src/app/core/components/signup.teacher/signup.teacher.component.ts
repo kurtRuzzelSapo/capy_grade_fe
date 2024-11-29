@@ -61,6 +61,7 @@ export class SignupTeacherComponent {
         this.dataService.postRequest('register/teacher', this.signupForm.value).subscribe({
           next: (response: any) => {
             this.openDialog(response.message);
+            console.log(response);
             setTimeout(() => {
               this.router.navigate(['/login']);
             }, 2000);

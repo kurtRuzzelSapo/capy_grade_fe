@@ -23,4 +23,8 @@ export class AccountService {
   putRequest(url: string, data: any) {
       return this.http.put(`${this.apiUrl}/${url}`, data);
   }
+
+  logout() {
+    window.sessionStorage.removeItem('user');
+  }
 }

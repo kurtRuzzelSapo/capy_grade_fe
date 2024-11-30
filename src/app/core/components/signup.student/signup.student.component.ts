@@ -60,7 +60,7 @@ export class SignupStudentComponent {
 
     signupStudent() {
       if (this.signupForm.valid) {
-        this.dataService.postRequest('register/teacher', this.signupForm.value).subscribe({
+        this.dataService.postRequest('register/student', this.signupForm.value).subscribe({
           next: (response: any) => {
             this.openDialog(response.message);
             setTimeout(() => {

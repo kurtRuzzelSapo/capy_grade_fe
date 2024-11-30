@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-
+import { RouterModule } from '@angular/router';
+import { TopnavComponent } from '../../../../shared/topnav/topnav.component';
+import { SidenavComponent } from '../../../../shared/sidenav/sidenav.component';
 @Component({
-  selector: 'app-dashboard.student',
+  selector: 'app-dashboard-student',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterModule, TopnavComponent, SidenavComponent],
   templateUrl: './dashboard.student.component.html',
-  styleUrl: './dashboard.student.component.css'
+  styleUrls: ['./dashboard.student.component.css']
 })
 export class DashboardStudentComponent {
-
+  constructor() {}
 }

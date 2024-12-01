@@ -45,14 +45,14 @@ export class LoginComponent {
           if (role === 'STUDENT') {
             console.log('Navigating to student dashboard...');
             setTimeout(() => {
-              this.router.navigate(['/dashboard/student'])
+              this.router.navigate(['/dashboard/student/classes'])
                 .then(() => console.log('Navigation successful'))
                 .catch(err => console.error('Navigation failed:', err));
             }, 2000);
           } else if (role === 'TEACHER') {
             console.log('Navigating to teacher dashboard...');
             setTimeout(() => {
-              this.router.navigate(['/dashboard/teacher'])
+              this.router.navigate(['/dashboard/teacher/classroom'])
                 .then(() => console.log('Navigation successful'))
                 .catch(err => console.error('Navigation failed:', err));
             }, 2000);

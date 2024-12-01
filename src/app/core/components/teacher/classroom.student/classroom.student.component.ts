@@ -14,6 +14,19 @@ interface Student {
   email: string;
 }
 
+interface Submission {
+  id: number;
+  student: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  submittedAt: Date;
+  fileUrl: string;
+  grade?: number;
+  feedback?: string;
+}
+
 @Component({
   selector: 'app-classroom.student',
   standalone: true,
@@ -30,6 +43,10 @@ export class ClassroomStudentComponent implements OnInit {
   selectedStudents: Set<number> = new Set();
   assignmentForm: FormGroup;
   assignments: Assignment[] = [];
+  submissions: Submission[] = [];
+  selectedAssignment: any = null;
+  selectedSubmission: Submission | null = null;
+  gradeForm: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +61,11 @@ export class ClassroomStudentComponent implements OnInit {
       title: ['', Validators.required],
       description: [''],
       dueDate: ['', Validators.required],
+    });
+
+    this.gradeForm = this.fb.group({
+      grade: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
+      feedback: ['', [Validators.required, ]]
     });
   }
 
@@ -93,7 +115,7 @@ export class ClassroomStudentComponent implements OnInit {
 
     // Get assignments for the classroom
     this.classroomService.getAssignmentsForClassroom(classroomId).subscribe({
-      next: (response) => {
+      next: (response: Assignment[]) => {
         console.log('Assignments:', response);
         this.assignments = response;
       },
@@ -197,4 +219,130 @@ export class ClassroomStudentComponent implements OnInit {
       });
     }
   }
+
+  viewSubmissions(assignment: any) {
+    console.log('Viewing submissions for assignment:', assignment); // Debug log
+
+    if (!assignment || !assignment.id) {
+        console.error('Invalid assignment object:', assignment);
+        return;
+    }
+
+    this.selectedAssignment = assignment;
+    this.classroomService.getSubmissionsByAssignment(Number(assignment.id)).subscribe({
+        next: (submissions) => {
+            console.log('Received submissions:', submissions); // Debug log
+            this.submissions = submissions;
+            const modal = document.getElementById('submissionsModal');
+            if (modal) {
+                const modalInstance = new Modal(modal);
+                modalInstance.show();
+            }
+        },
+        error: (error) => {
+            console.error('Error fetching submissions:', error);
+            // You might want to show an error message to the user here
+        }
+    });
+  }
+
+  openGradeModal(submission: Submission) {
+    this.selectedSubmission = submission;
+    this.gradeForm.patchValue({
+      grade: submission.grade || ''
+    });
+    const modal = document.getElementById('gradeModal');
+    if (modal) {
+      const modalInstance = new Modal(modal);
+      modalInstance.show();
+    }
+  }
+
+  closeGradeModal() {
+    const modal = document.getElementById('gradeModal');
+    if (modal) {
+      const modalInstance = new Modal(modal);
+      modalInstance.hide();
+    }
+  }
+
+  closeSubmissionsModal() {
+    const modal = document.getElementById('submissionsModal');
+    if (modal) {
+      const modalInstance = new Modal(modal);
+      modalInstance.hide();
+    }
+  }
+
+  submitGrade() {
+    if (this.gradeForm.valid && this.selectedSubmission) {
+      this.classroomService.gradeSubmission(
+        this.selectedSubmission.id,
+        this.gradeForm.value.grade,
+        this.gradeForm.value.feedback
+      ).subscribe({
+        next: (response) => {
+          // Update the submission in the list
+          const index = this.submissions.findIndex(s => s.id === this.selectedSubmission?.id);
+          if (index !== -1) {
+            this.submissions[index] = response;
+          }
+          this.closeGradeModal();
+        },
+        error: (error) => {
+          console.error('Error grading submission:', error);
+        }
+      });
+    }
+  }
+
+  editStudent(student: any) {
+    // Implement edit functionality
+    console.log('Edit student:', student);
+  }
+
+  deleteStudent(student: any) {
+    if (confirm('Are you sure you want to remove this student from the classroom?')) {
+      // Implement delete functionality
+      console.log('Delete student:', student);
+    }
+  }
+
+  downloadFile(fileUrl: string, event: Event) {
+    event.preventDefault(); // Prevent default link behavior
+
+    if (!fileUrl) {
+        console.error('No file URL provided');
+        return;
+    }
+
+    // If the URL is a full URL (starts with http or https)
+    if (fileUrl.startsWith('http')) {
+        window.open(fileUrl, '_blank');
+    } else {
+        // If it's a relative URL, prepend your API base URL
+        const fullUrl = `${this.classroomService.apiUrl}/${fileUrl}`;
+        window.open(fullUrl, '_blank');
+    }
+  }
+
+  downloadFileDirectly(fileUrl: string) {
+    this.classroomService.downloadFile(fileUrl).subscribe({
+        next: (response: Blob) => {
+            const url = window.URL.createObjectURL(response);
+            const link = document.createElement('a');
+            link.href = url;
+            // Extract filename from URL or use a default name
+            const filename = fileUrl.split('/').pop() || 'downloaded-file';
+            link.download = filename;
+            link.click();
+            window.URL.revokeObjectURL(url);
+        },
+        error: (error) => {
+            console.error('Error downloading file:', error);
+            // Show error message to user
+        }
+    });
+  }
+
 }

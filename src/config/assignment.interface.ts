@@ -1,7 +1,7 @@
 export interface Assignment {
-  id?: number;
+  id: number;
   title: string;
-  description?: string;
-  classroomId: number;
+  description: string;
   dueDate: Date;
+  classroomId: number;
 }
